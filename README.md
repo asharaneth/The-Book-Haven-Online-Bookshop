@@ -52,5 +52,5 @@ Web_Assignment/
 
 ## 👨‍💻 Developed For
 
-**Level 02 Web Technologies Project**
+**Level 01 Web Technologies Project**
 
