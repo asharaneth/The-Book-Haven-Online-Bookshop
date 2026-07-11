@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body{
+      display:flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to right, #dfe9f3, #ffffff);
+
+      
+    }
+    form{
+      display: flex;
+      flex-direction: column;
+      width:30%;
+      margin-top:5px;
+      padding: 30px;
+      border:1px solid gray;
+      border-radius:5px;
+      
+
+    }
+    label{
+      font-size: large;
+      font-weight: 550;
+    }
+    input{
+      padding:10px;
+    }
+    textarea{
+      padding:10px;
+    }
+    button{
+      padding:15px;
+      background-color:#2649A7;
+      color:#fff;
+      border:1px;
+      border-radius: 2px;
+      transition:background-color 0.5s ease;
+    }
+    button:hover{
+      background-color:#2042a1 ;
+    }
+    h2{
+      margin-top:10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>SignUp</h2>
+  <form onsubmit="signup(event)">
+    <label for=uname>Username</label> 
+    <input type="text" name="username" id="uname" placeholder="Username" required><br>
+    <label for="pwd">Password</label>
+    <input type="password" name="password" id="pwd" placeholder="Password" required><br>
+    <label for="address">Address</label>
+    <textarea rows="5" cols="30" name="add" id="address" placeholder="Address"></textarea><br>
+    <label for="dob">Date</label>
+    <input type="date" name="date" id="joined_date"><br>
+
+
+    <button type="submit">Register</button>
+    
+</form>
+<div id="message"></div>
+
+
+<script>
+        function signup(e){
+             e.preventDefault();
+          const username=document.getElementById("uname").value;
+          const password=document.getElementById("pwd").value;
+          const address=document.getElementById("address").value;
+          const date=document.getElementById("joined_date").value;
+          const msg=document.getElementById("message")
+
+          fetch("register.php",{
+              method:'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body:JSON.stringify({username,password,address,date})
+          })
+          .then(res=>res.json())
+          .then(data=>{
+                if(data.success){
+                    msg.style.color = "green";
+                    msg.innerText = "Signup is successful!";
+
+                }              
+                else{
+                    msg.style.color = "red";
+                    msg.innerText = data.message;
+                  
+                }
+          })
+
+        }
+
+
+
+
+</script>
+  
+</body>
+</html>
+
+
+
+
+
+
+
+

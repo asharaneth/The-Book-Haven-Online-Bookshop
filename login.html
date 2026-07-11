@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <style>
+    body{
+      display:flex;
+      flex-direction: column;
+      justify-content:center;
+      align-items: center;
+      background-color: #e6f0ff;
+
+
+    }
+    h2{
+      margin-top: 100px;;
+    }
+    form{
+      display:flex;
+      flex-direction: column;
+      width:30%;
+      padding:15px;
+      border:1px solid gray;
+      border-radius:2px;
+      margin-top:10px;
+    }
+    input{
+      padding:10px;
+    }
+    button{
+      padding:15px;
+      background-color:#2649A7;
+      color:#fff;
+      transition:background-color 0.5 ease;
+      border:1px;
+      border-radius:2px;
+    }
+    button:hover{
+      background-color:#2042a1;
+    }
+    label{
+      font-size: large;
+      font-weight:550;
+    }
+    p{
+      font-size: large;
+    }
+    a{
+      text-decoration:underline;
+      color:black;
+    }
+    
+  </style>
+</head>
+<body>
+
+<h2>Login</h2>
+<form id="login_form">
+  
+  <label for="uname">Username:</label>
+  <input type="text" name="username" id="uname" required><br>
+
+  <label for="pwd">Password:</label>
+  <input type="password" name="password" id="pwd" required><br>
+
+  <button type="submit">Login</button>
+</form>
+
+<p>Don't have an account? <a href="register.html">Register here</a></p>
+<div id="message"></div>
+<script>
+     document.getElementById("login_form").addEventListener("submit",function(e){
+          e.preventDefault();
+
+          const username=document.getElementById("uname").value;
+          const password=document.getElementById("pwd").value;
+          const msg = document.getElementById("message");
+
+           fetch("login.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+        })
+        .then(res=>res.json())
+        .then(data=>{
+             if(data.success){
+                    msg.style.color = "green";
+                    msg.innerText = "Login successful! Welcome " + data.username;
+             }
+             else{
+                    msg.style.color = "red";
+                    msg.innerText = data.message;
+             }
+        })
+     })
+
+
+
+
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bookshop Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: 'Inter', sans-serif; background:#f4f7fa; color:#333; }
+    .container { max-width:900px; margin:40px auto; padding:20px; }
+    h1 { text-align:center; margin-bottom:40px; font-size:2.5rem; color:#2c3e50; }
+
+    .card { background:#fff; padding:25px 30px; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.08); margin-bottom:30px; }
+    .card h2 { margin-bottom:20px; color:#34495e; }
+
+    input { width:calc(50% - 10px); padding:12px 15px; margin:5px 5px 20px 0; border-radius:8px; border:1px solid #ccc; font-size:1rem; transition:0.3s; }
+    input:focus { border-color:#2980b9; outline:none; }
+
+    button { padding:12px 25px; border:none; border-radius:8px; background:#2980b9; color:#fff; font-weight:600; cursor:pointer; transition:0.3s; }
+    button:hover { background:#1c5980; }
+
+    ul { list-style:none; }
+    .book-item { display:flex; justify-content:space-between; align-items:center; padding:12px 15px; border-bottom:1px solid #eee; transition:background 0.2s; }
+    .book-item:hover { background:#f0f4f8; }
+    .delete-btn { background:#e74c3c; padding:8px 14px; border-radius:6px; font-size:0.9rem; }
+    .delete-btn:hover { background:#c0392b; }
+
+    #adminPanel { display:none; } /* hide admin panel until login */
+    #loginMsg { color:red; }
+
+    @media(max-width:600px) {
+        input { width:100%; }
+        .book-item { flex-direction:column; align-items:flex-start; }
+        .delete-btn { margin-top:8px; }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Login Section -->
+    <div id="loginSection" class="card">
+        <h2>Admin Login</h2>
+        <input id="username" placeholder="Username">
+        <input id="password" type="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <p id="loginMsg"></p>
+    </div>
+
+    <!-- Admin Panel Section -->
+    <div id="adminPanel">
+        <h1>📚 Bookshop Admin Panel</h1>
+
+        <!-- Add Book Section -->
+        <div class="card">
+            <h2>Add New Book</h2>
+            <input id="title" placeholder="Book Title">
+            <input id="price" placeholder="Price">
+            <button onclick="addBook()">Add Book</button>
+        </div>
+
+        <!-- Book List Section -->
+        <div class="card">
+            <h2>All Books</h2>
+            <ul id="bookList"></ul>
+        </div>
+
+        <button onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<script>
+    // LOGIN FUNCTION
+    function login() {
+        fetch('/admin/login', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value
+            })
+        })
+        .then(res=>res.json())
+        .then(data=>{
+            if(data.success){
+                document.getElementById('loginSection').style.display='none';
+                document.getElementById('adminPanel').style.display='block';
+                loadBooks();
+            } else {
+                document.getElementById('loginMsg').innerText = data.message;
+            }
+        });
+    }
+
+    // LOGOUT FUNCTION
+    function logout() {
+        fetch('/admin/logout', { method:'POST' })
+        .then(res=>res.json())
+        .then(data=>{
+            if(data.success){
+                document.getElementById('loginSection').style.display='block';
+                document.getElementById('adminPanel').style.display='none';
+            }
+        });
+    }
+
+    // ADD BOOK FUNCTION
+    function addBook() {
+        fetch('/admin/add-book', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({
+                title: document.getElementById('title').value,
+                price: document.getElementById('price').value
+            })
+        })
+        .then(res=>res.json())
+        .then(data=>{
+            if(data.success) loadBooks();
+            else alert(data.message);
+        });
+    }
+
+    // LOAD BOOKS
+    function loadBooks() {
+        fetch('/admin/books')
+        .then(res=>res.json())
+        .then(data=>{
+            const list=document.getElementById('bookList');
+            list.innerHTML='';
+            data.forEach(book=>{
+                list.innerHTML+=`
+                    <li class="book-item">
+                        <span>${book.title} - $${book.price}</span>
+                        <button class="delete-btn" onclick="deleteBook(${book.id})">Delete</button>
+                    </li>`;
+            });
+        });
+    }
+
+    // DELETE BOOK
+    function deleteBook(id){
+        fetch('/admin/books/'+id,{method:'DELETE'})
+        .then(()=>loadBooks());
+    }
+</script>
+</body>
+</html>
